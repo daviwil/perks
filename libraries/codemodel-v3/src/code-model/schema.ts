@@ -29,7 +29,7 @@ export enum Purpose {
 
 
 export interface VirtualProperty {
-  kind: 'my-property' | 'child-property' | 'parent-property';
+  kind: 'my-property' | 'inlined-property' | 'parent-property';
   property: Property;
   propertyName: Array<string>
   container: Schema;

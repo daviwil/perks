@@ -947,8 +947,11 @@ export class Oai2ToOai3 {
             }
           }
         }
-      } else if (parameterValue.type === 'file') {
-
+      } else if (parameterValue.type === 'file' ||
+                 (parameterValue.schema.type === 'object' &&
+                  parameterValue.schema.format === 'file')) {
+        // Support non-standard file param patterns { type: object, format: file }
+        // for AutoRest v2 compatibility
         targetOperation['application/octet-stream'] = this.newObject(pointer);
         targetOperation['application/octet-stream'].schema = this.newObject(pointer);
         targetOperation['application/octet-stream'].schema.type = { value: 'string', pointer };
@@ -1040,6 +1043,13 @@ export class Oai2ToOai3 {
         responseTarget.content[mimetype].schema = this.newObject(jsonPointer);
         for (const { key, value, childIterator } of responsesFieldMembers()) {
           if (key === 'schema') {
+            // Convert file-ish schemas to `type: string, format: binary` for AutoRest v2
+            // compatibility
+            if (value.type === 'file' || value.type === 'object' && value.format === 'file') {
+              value.type = 'string';
+              value.format = 'binary';
+            }
+
             this.visitSchema(responseTarget.content[mimetype].schema, value, childIterator);
           }
         }

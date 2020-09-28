@@ -749,7 +749,8 @@
             "content": {
               "application/gzip": {
                 "schema": {
-                  "type": "file"
+                  "type": "string",
+                  "format": "binary"
                 }
               }
             }
